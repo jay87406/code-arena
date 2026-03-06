@@ -84,7 +84,12 @@ async function submitCode() {
   });
 
   setResultMessage(data.message, Boolean(data.ok));
-  await loadMe();
+  if (typeof data.score === "number") {
+    document.getElementById("score").textContent = `分數: ${data.score}`;
+  }
+  if (data.ok) {
+    await loadMe();
+  }
   await loadBoard();
 }
 
