@@ -25,6 +25,9 @@ SAFE_BUILTINS = {
     "int": int,
     "str": str,
     "zip": zip,
+    "sorted": sorted,
+    "any": any,
+    "all": all,
 }
 
 FORBIDDEN_AST = (
@@ -50,14 +53,18 @@ class EvalResult:
     message: str
 
 
-def _to_runtime_arg(value: Any) -> Any:
-    if isinstance(value, list):
+def _uses_numpy(question: Question) -> bool:
+    return "numpy" in question.tags or "ai" in question.tags
+
+
+def _to_runtime_arg(value: Any, use_numpy: bool) -> Any:
+    if use_numpy and isinstance(value, list):
         return np.array(value)
     return value
 
 
-def _to_compare_value(value: Any) -> Any:
-    if isinstance(value, list):
+def _to_compare_value(value: Any, use_numpy: bool) -> Any:
+    if use_numpy and isinstance(value, list):
         return np.array(value)
     return value
 
@@ -66,7 +73,7 @@ def _compare(actual: Any, expected: Any) -> bool:
     if isinstance(expected, np.ndarray):
         if not isinstance(actual, np.ndarray):
             actual = np.array(actual)
-        return np.allclose(actual, expected)
+        return np.allclose(actual, expected, rtol=1e-5, atol=1e-6)
     return actual == expected
 
 
@@ -89,10 +96,11 @@ def evaluate_submission(code: str, question: Question) -> EvalResult:
 
         func = env[question.function_name]
         passed = 0
+        use_numpy = _uses_numpy(question)
 
         for i, test in enumerate(question.tests, start=1):
-            args = tuple(_to_runtime_arg(arg) for arg in test.args)
-            expected = _to_compare_value(test.expected)
+            args = tuple(_to_runtime_arg(arg, use_numpy) for arg in test.args)
+            expected = _to_compare_value(test.expected, use_numpy)
             actual = func(*args)
             if _compare(actual, expected):
                 passed += 1
@@ -102,4 +110,3 @@ def evaluate_submission(code: str, question: Question) -> EvalResult:
         return EvalResult(True, passed, len(question.tests), "全部測資通過")
     except Exception as exc:
         return EvalResult(False, 0, len(question.tests), f"執行錯誤: {exc}")
-

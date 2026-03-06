@@ -3,6 +3,7 @@
   --panel: #ffffff;
   --ink: #14213d;
   --accent: #fca311;
+  --muted: #6b7280;
   --ok: #2a9d8f;
   --bad: #d62828;
 }
@@ -47,6 +48,19 @@ body {
   align-items: center;
 }
 
+.editorTools {
+  margin: 10px 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tip {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
 input, textarea, button {
   font: inherit;
 }
@@ -59,9 +73,11 @@ input, textarea {
 }
 
 textarea {
-  min-height: 220px;
-  margin-top: 10px;
+  min-height: 260px;
+  margin-top: 6px;
   font-family: Consolas, monospace;
+  line-height: 1.45;
+  tab-size: 4;
 }
 
 button {
@@ -73,12 +89,26 @@ button {
   cursor: pointer;
 }
 
+button.secondary {
+  background: #e5e7eb;
+}
+
 pre {
   background: #1f2937;
   color: #f9fafb;
   padding: 10px;
   border-radius: 8px;
   overflow: auto;
+}
+
+.solutionBlock {
+  margin-top: 10px;
+}
+
+.solutionBlock summary {
+  cursor: pointer;
+  color: var(--ink);
+  font-weight: 600;
 }
 
 table {
@@ -97,5 +127,5 @@ th, td {
 
 @media (max-width: 760px) {
   .row { flex-direction: column; align-items: stretch; }
+  .editorTools { flex-direction: column; align-items: flex-start; }
 }
-

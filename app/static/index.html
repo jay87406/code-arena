@@ -15,6 +15,7 @@
           <span id="me"></span>
           <span id="progress"></span>
           <span id="score"></span>
+          <span id="solutionViews"></span>
         </div>
       </section>
 
@@ -30,7 +31,19 @@
         <h2 id="qTitle">載入中...</h2>
         <p id="qDesc"></p>
         <pre id="starter"></pre>
-        <textarea id="code"></textarea>
+
+        <div class="editorTools">
+          <span class="tip">快捷鍵: Tab 縮排, Shift+Tab 反縮排, Enter 自動延續縮排</span>
+          <button id="viewSolutionBtn" class="secondary">看解答</button>
+        </div>
+
+        <textarea id="code" spellcheck="false"></textarea>
+
+        <details id="solutionBlock" class="solutionBlock">
+          <summary>參考解答</summary>
+          <pre id="solution"></pre>
+        </details>
+
         <div class="row">
           <button id="submitBtn">提交答案</button>
           <span id="result"></span>
@@ -41,7 +54,7 @@
         <h2>排行榜</h2>
         <table>
           <thead>
-            <tr><th>玩家</th><th>分數</th><th>已解</th><th>IP</th></tr>
+            <tr><th>玩家</th><th>分數</th><th>已解</th><th>看解答</th><th>IP</th></tr>
           </thead>
           <tbody id="leaderboard"></tbody>
         </table>
@@ -50,4 +63,3 @@
     <script src="/static/app.js"></script>
   </body>
 </html>
-

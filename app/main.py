@@ -28,6 +28,7 @@ class PlayerState:
     score: int
     current_index: int
     assigned_qids: list[str]
+    solutions_viewed: int
 
 
 class SubmitPayload(BaseModel):
@@ -58,7 +59,7 @@ def _build_seed(ip: str, client_id: str) -> int:
     return int(digest[:16], 16)
 
 
-def _assign_questions(ip: str, client_id: str, count: int = 5) -> list[str]:
+def _assign_questions(ip: str, client_id: str, count: int = 12) -> list[str]:
     qids = [q.qid for q in QUESTION_BANK]
     rng = random.Random(_build_seed(ip, client_id))
     rng.shuffle(qids)
@@ -76,6 +77,7 @@ def _get_or_create_player(request: Request) -> tuple[PlayerState, bool]:
                 player.ip = ip
                 player.assigned_qids = _assign_questions(ip, client_id)
                 player.current_index = 0
+                player.solutions_viewed = 0
             return player, False
 
         client_id = str(uuid4())
@@ -86,6 +88,7 @@ def _get_or_create_player(request: Request) -> tuple[PlayerState, bool]:
             score=0,
             current_index=0,
             assigned_qids=_assign_questions(ip, client_id),
+            solutions_viewed=0,
         )
         _players[client_id] = player
         return player, True
@@ -125,6 +128,7 @@ def get_me(request: Request) -> JSONResponse:
             "ip": player.ip,
             "nickname": player.nickname,
             "score": player.score,
+            "solutions_viewed": player.solutions_viewed,
             "progress": {
                 "current": player.current_index,
                 "total": len(player.assigned_qids),
@@ -180,6 +184,25 @@ def submit(payload: SubmitPayload, request: Request) -> dict[str, Any]:
     }
 
 
+@app.get("/api/solution")
+def get_solution(request: Request) -> dict[str, Any]:
+    player, _ = _get_or_create_player(request)
+    question = _current_question(player)
+    if not question:
+        return {"ok": False, "message": "目前沒有進行中的題目"}
+
+    with _lock:
+        player.solutions_viewed += 1
+
+    return {
+        "ok": True,
+        "qid": question.qid,
+        "title": question.title,
+        "solution_code": question.solution_code,
+        "message": "已顯示參考解答",
+    }
+
+
 @app.get("/api/leaderboard")
 def leaderboard() -> dict[str, Any]:
     with _lock:
@@ -189,6 +212,7 @@ def leaderboard() -> dict[str, Any]:
                 "nickname": p.nickname,
                 "score": p.score,
                 "solved": p.current_index,
+                "solution_views": p.solutions_viewed,
                 "ip": p.ip,
             }
             for p in rows
