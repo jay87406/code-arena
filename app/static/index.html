@@ -1,0 +1,53 @@
+﻿<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Code Arena</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <section class="panel header">
+        <h1>Code Arena</h1>
+        <p>多人連線練習 Numpy / Python，題目依玩家來源分流。</p>
+        <div class="meta">
+          <span id="me"></span>
+          <span id="progress"></span>
+          <span id="score"></span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <label for="nickname">暱稱</label>
+        <div class="row">
+          <input id="nickname" maxlength="24" placeholder="輸入你的暱稱" />
+          <button id="saveNick">儲存</button>
+        </div>
+      </section>
+
+      <section class="panel" id="questionPanel">
+        <h2 id="qTitle">載入中...</h2>
+        <p id="qDesc"></p>
+        <pre id="starter"></pre>
+        <textarea id="code"></textarea>
+        <div class="row">
+          <button id="submitBtn">提交答案</button>
+          <span id="result"></span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>排行榜</h2>
+        <table>
+          <thead>
+            <tr><th>玩家</th><th>分數</th><th>已解</th><th>IP</th></tr>
+          </thead>
+          <tbody id="leaderboard"></tbody>
+        </table>
+      </section>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
+
