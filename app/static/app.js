@@ -47,6 +47,7 @@ async function loadMe() {
   document.getElementById("solutionViews").textContent = `看解答次數: ${data.solutions_viewed}`;
   document.getElementById("nickname").value = data.nickname;
   renderQuestion(data.question);
+  return data;
 }
 
 async function loadBoard() {
@@ -100,7 +101,8 @@ async function viewSolution() {
   document.getElementById("solution").textContent = data.solution_code;
   document.getElementById("solutionBlock").open = true;
   setResultMessage(data.message, true);
-  await loadMe();
+  const me = await api("/api/me");
+  document.getElementById("solutionViews").textContent = `看解答次數: ${me.solutions_viewed}`;
   await loadBoard();
 }
 
