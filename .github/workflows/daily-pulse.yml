@@ -1,0 +1,41 @@
+name: daily-pulse
+
+on:
+  schedule:
+    # 09:30 Asia/Taipei = 01:30 UTC
+    - cron: "30 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-log:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: github-daily-pulse
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate daily entry
+        run: python daily_pulse.py --auto
+
+      - name: Commit changes
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add github-daily-pulse/logs
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "chore: daily pulse update"
+          git push
