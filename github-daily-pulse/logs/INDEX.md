@@ -1,0 +1,4 @@
+# Daily Index
+
+| Date | Entry |
+|---|---|
